@@ -13,14 +13,7 @@ from pydantic import BaseModel
 app = FastAPI(title="Q11 Orders API")
 
 # Allow the assignment page to call this API from a browser.
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["Retry-After"],
-)
+
 
 TOTAL_ORDERS = 46
 RATE_LIMIT = 17
@@ -152,3 +145,14 @@ def list_orders(limit: int = 10, cursor: str | None = None):
         "items": items,
         "next_cursor": next_cursor,
     }
+
+
+# Ensure CORS headers are added to every response, including HTTP 429.
+app = CORSMiddleware(
+    app=app,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["Retry-After"],
+)
